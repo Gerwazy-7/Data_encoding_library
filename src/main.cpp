@@ -1,16 +1,20 @@
-#include <iostream>
-#include "Input_handler.hpp"
+#include <main.hpp>
 
 int main()
 {
-   Input_handler handler;
-   handler.introduce();
+   // Introduce application for user
+   JR::show_on_screen::introduce();
+
+   // Flag used to determin whether program should be continued
    bool continue_program = true;
+
+   // Main program loop
    while(continue_program)
    {
-      bool check = handler.cipher_process();
+      bool check = JR::app_logic::cipher_process();
       if (check == false)
       {
+         // Program ends when user type "exit"
          continue_program = false;
       }
    }

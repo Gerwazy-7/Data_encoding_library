@@ -1,131 +1,98 @@
+/******************************************************************************
+ * This file is a part of the JPO final project.                              *
+ ******************************************************************************/
+
+ /**
+ * \file Caesar.hpp
+ * \author Rajski Jan
+ * \date JAN 2026
+ * \brief File containing declaration of class Caesar and its methods.
+ */
+
+
 #pragma once
 #include "Cipher.hpp"
 #include <vector>
-#include <stdexcept>
 #include <string>
-#include <cctype>
 
-class Caesar: public Cipher
+namespace JR
 {
-    private:
-        int m_key;
-        std::vector<std::string> m_data;
+    /**
+     * \brief Definition of class Caesar.
+     * It inherits from class Cipher. It has two constructors: default
+     * and parametrized and also methods run_caesar_cipher(), key_check(),
+     * encode() and decode().
+     */
+    class Caesar: public Cipher
+    {
+        private:
+            /**
+             * \brief It runs caesar cipher for given data.
+             * The functions goes through every char in data and shifts letter
+             * by number given in as the key.
+             * \return String with changed by cipher data.
+             */
+            std::string run_caesar_cipher(int used_key);
 
-    public:
-        Caesar() = default;
+        protected:
+            /**
+             * \brief Key used in working on data.
+             */
+            int m_key;
+        
+        public:
+            /**
+             * \brief Default constructor.
+             */
+            Caesar() = default;
+            
+            /**
+             * \brief Parametrized constructor.
+             * Initializes Caesar with given data and key.
+             * \param key_val String containing an intiger. Given string is
+             * converted for intiger by function key_check. Input is string instead
+             * of intiger because it allows for better validating.
+             * \param data_val Vector of strings to be encrypted/decrypted.
+             * \throw std::invalid_argument If provided vector is empty, given key is not
+             * a number, or not in proper range.
+             */
+            Caesar(const std::string& key_val, const std::vector<std::string>& data_val);
+            
+            /**
+             * \brief Parametrized constructor.
+             * Initializes Caesar with given data and key. In this version, key is given
+             * as intiger.
+             * \param key_val Intiger, key used in Caesar cipher.
+             * \param data_val Vector of strings to be encrypted/decrypted.
+             * \throw std::invalid_argument If provided vector is empty, given key is not
+             * in correct range.
+             */
+            Caesar(const int& key_val, const std::vector<std::string>& data_val);
 
-        Caesar(const std::string& key_val, const std::vector<std::string>& data_val)
-            : m_key(key_check(key_val)), m_data(data_val)
-        {
-            if (m_data.empty())
-            {
-                throw std::invalid_argument("Data weren't given!");
-            }
-        }
+            /**
+             * \brief Function used for validating given key.
+             * It checks if given string is not empty, if it is not just
+             * sign (+/-), if it is a number and if it is in correct range.
+             * \param key String passed by user. It is validated and returned
+             * as intiger.
+             * \return Converted to intiger and validated key given by user.
+             */
+            int key_check(const std::string& key);
 
-        int key_check(const std::string& key)
-        {
-            int i = 0;
-            if (key.empty())
-            {
-                throw std::invalid_argument("Key cannot be emtpty!");
-            }
-            if ((key[0] == '-') || (key[0] == '+'))
-            {
-                if (key.length() == 1)
-                {
-                    throw std::invalid_argument("Given key cannot be +/- without specyfing number!");
-                }
-                i = 1;
-            }
-            for (; i < key.length(); ++i)
-            {
-                if (!std::isdigit(static_cast<unsigned char>(key[i])))
-                {
-                    throw std::invalid_argument("Key must be a number!");
-                }
-            }
-            int int_key = stoi(key);
-            if (int_key < -26 || int_key > 26)
-            {
-                throw std::invalid_argument("Given key must be in range [-26,26]!");
-            }
-            return int_key;
-        }
+            /**
+             * \brief It encrypts given data.
+             * The function calls run_caesar_cipher with unchanged key given
+             * by user and because of that it encrypts the data.
+             * \return Encoded string
+             */
+            std::string encode() override;
 
-        std::string encode() override
-        {
-            int length_of_vector = m_data.size();
-            std::string ciphered {};
-            for (int i = 0; i < length_of_vector; ++i)
-            {
-                int base = 0;
-                int length_of_element = m_data[i].size();
-                std::string word = m_data[i];
-                std::string new_word = "";
-                for (int j = 0; j < length_of_element; ++j)
-                {
-                    if (std::islower(static_cast<unsigned char>(word[j]))) 
-                    {
-                        base = 'a';
-                        new_word += (word[j] - base + m_key + 26) % 26 + base;
-                    }
-                    else if (!isalpha(word[j]))
-                    {
-                        new_word+=word[j];
-                    }
-                    else
-                    {
-                        base = 'A';
-                        new_word += (word[j] - base + m_key + 26) % 26 + base;
-                    }
-                }
-                if (i != (length_of_vector-1))
-                {
-                    new_word += " ";
-                    
-                }
-                ciphered += new_word;
-            }
-            return ciphered;
-        }
-
-        std::string decode() override
-         {
-            int length_of_vector = m_data.size();
-            std::string deciphered {};
-            for (int i = 0; i < length_of_vector; ++i)
-            {
-                int decipher_key = -m_key;
-                int base = 0;
-                int length_of_element = m_data[i].size();
-                std::string word = m_data[i];
-                std::string new_word = "";
-                for (int j = 0; j < length_of_element; ++j)
-                {
-                    if (std::islower(static_cast<unsigned char>(word[j]))) 
-                    {
-                        base = 'a';
-                        new_word += (word[j] - base + decipher_key + 26) % 26 + base;
-                    }
-                    else if (!isalpha(word[j]))
-                    {
-                        new_word+=word[j];
-                    }
-                    else
-                    {
-                        base = 'A';
-                        new_word += (word[j] - base + decipher_key + 26) % 26 + base;
-                    }
-                }
-                if (i != (length_of_vector-1))
-                {
-                    new_word += " ";
-                    
-                }
-                deciphered += new_word;
-            }
-            return deciphered;
-        }
-
-};
+            /**
+             * \brief It decodes given data.
+             * The function calls run_caesar_cipher with changed sign of a key
+             * given by user and because of that it decrypts the data.
+             * \return Decoded string.
+             */
+            std::string decode() override;
+    };
+}
