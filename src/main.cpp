@@ -5,17 +5,12 @@ int main()
    // Introduce application for user
    JR::show_on_screen::introduce();
 
-   // Flag used to determin whether program should be continued
-   bool continue_program = true;
-
    // Main program loop
-   while(continue_program)
+   while(1)
    {
-      bool check = JR::app_logic::cipher_process();
-      if (check == false)
+      if (JR::app_logic::cipher_process() == false)
       {
-         // Program ends when user type "exit"
-         continue_program = false;
+         break;
       }
    }
    return 0;
